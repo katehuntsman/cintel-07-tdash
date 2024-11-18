@@ -1,5 +1,5 @@
 # Import necessary libraries
-import seaborn as sns  # For data visualization (scatterplot)
+import plotly.express as px  # For interactive data visualization (Plotly)
 from faicons import icon_svg  # For rendering icons
 from shiny import reactive  # For reactivity in the app
 from shiny.express import input, render, ui  # UI components, input handling, and rendering
@@ -14,7 +14,6 @@ ui.page_opts(
     fillable=True,  # Make the page fillable
     favicon="favicon.ico"  # Reference the favicon
 )
-
 
 # Define the sidebar layout for the filter controls
 with ui.sidebar(title="Penguin Filters"):
@@ -80,15 +79,29 @@ with ui.layout_columns():
     with ui.card(full_screen=True):
         ui.card_header("Bill Length vs Bill Depth")  # Updated card header
 
-        # Render the scatterplot based on the filtered data
-        @render.plot
+        # Render the scatterplot based on the filtered data using Plotly
+        @render.ui
         def length_depth():
-            return sns.scatterplot(
-                data=filtered_df(),  # Use the filtered data
+            # Get the filtered data
+            data = filtered_df()
+
+            # Ensure there's data to display
+            if data.empty:
+                return "No data to display."
+
+            # Create the Plotly scatter plot with the light theme
+            fig = px.scatter(
+                data,  # Filtered DataFrame
                 x="bill_length_mm",  # x-axis: bill length
                 y="bill_depth_mm",  # y-axis: bill depth
-                hue="species",  # Hue (color) based on species
+                color="species",  # Color by species
+                title="Bill Length vs Bill Depth of Penguins",  # Title of the chart
+                labels={"bill_length_mm": "Bill Length (mm)", "bill_depth_mm": "Bill Depth (mm)"},  # Axis labels
+                template="plotly"  # Light theme for the chart
             )
+
+            # Return the Plotly figure
+            return fig
 
     # Card for displaying the summary statistics of the dataset
     with ui.card(full_screen=True):
@@ -105,7 +118,6 @@ with ui.layout_columns():
                 "body_mass_g",  # Body mass in grams
             ]
             return render.DataGrid(filtered_df()[cols], filters=True)  # Render the DataGrid with filters
-            
 
 # Define the reactive calculation that filters the DataFrame based on user input
 @reactive.calc
