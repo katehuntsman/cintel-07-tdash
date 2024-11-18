@@ -8,8 +8,13 @@ import palmerpenguins  # Dataset with penguin data
 # Load the penguin dataset into a DataFrame
 df = palmerpenguins.load_penguins()
 
-# Set the options for the page (title, and whether the page is fillable)\
-ui.page_opts(title="Penguins Dashboard - Explore the Penguin Species", fillable=True)
+# Set the options for the page (title, favicon, etc.)
+ui.page_opts(
+    title="Penguins Dashboard - Explore the Penguin Species",  # Page title
+    fillable=True,  # Make the page fillable
+    favicon="favicon.ico"  # Reference the favicon
+)
+
 
 # Define the sidebar layout for the filter controls
 with ui.sidebar(title="Penguin Filters"):
